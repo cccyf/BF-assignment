@@ -5,6 +5,12 @@ import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
 
 import javax.swing.JFrame;
@@ -20,6 +26,8 @@ import rmi.RemoteHelper;
 public class MainFrame extends JFrame {
 	private JTextArea textArea;
 	private JLabel resultLabel;
+	private JTextArea argsArea;
+	boolean hasTyped = false;
 
 	public MainFrame() {
 		// 创建窗体
@@ -44,15 +52,28 @@ public class MainFrame extends JFrame {
 		saveMenuItem.addActionListener(new SaveActionListener());
 		runMenuItem.addActionListener(new MenuItemActionListener());
 
-		textArea = new JTextArea();
+		textArea = new JTextArea("Start coding...");
 		textArea.setMargin(new Insets(10, 10, 10, 10));
 		textArea.setLineWrap(true);
 		textArea.setDragEnabled(true);
 		Color middleGray = new Color(96, 96, 96);
 		textArea.setBackground(middleGray);
-		textArea.setForeground(Color.white);
+		textArea.setForeground(Color.LIGHT_GRAY);
 		frame.add(textArea, BorderLayout.CENTER);
+		argsArea = new JTextArea("args...");
+		// boolean hasTyped =false;
+		textArea.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (hasTyped) {
+					// textArea.setText(textArea.getText()+e.getKeyChar());
+				} else {
+					textArea.setText("");
+					hasTyped = true;
+				}
+			}
+		});
 
+		frame.add(argsArea, BorderLayout.SOUTH);
 		// 显示结果
 		resultLabel = new JLabel();
 		resultLabel.setText("result");
