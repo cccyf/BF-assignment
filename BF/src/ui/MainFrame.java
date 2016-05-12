@@ -14,8 +14,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
 
+import javafx.scene.text.Font;
 import rmi.RemoteHelper;
-
 
 public class MainFrame extends JFrame {
 	private JTextArea textArea;
@@ -46,7 +46,11 @@ public class MainFrame extends JFrame {
 
 		textArea = new JTextArea();
 		textArea.setMargin(new Insets(10, 10, 10, 10));
-		textArea.setBackground(Color.LIGHT_GRAY);
+		textArea.setLineWrap(true);
+		textArea.setDragEnabled(true);
+		Color middleGray = new Color(96, 96, 96);
+		textArea.setBackground(middleGray);
+		textArea.setForeground(Color.white);
 		frame.add(textArea, BorderLayout.CENTER);
 
 		// 显示结果
@@ -64,7 +68,7 @@ public class MainFrame extends JFrame {
 		/**
 		 * 子菜单响应事件
 		 */
-		//@Override
+		// @Override
 		public void actionPerformed(ActionEvent e) {
 			String cmd = e.getActionCommand();
 			if (cmd.equals("Open")) {
@@ -72,14 +76,26 @@ public class MainFrame extends JFrame {
 			} else if (cmd.equals("Save")) {
 				textArea.setText("Save");
 			} else if (cmd.equals("Run")) {
-				resultLabel.setText("Hello, result");
+				resultLabel.setText(runMethod());
 			}
 		}
 	}
 
+	public String runMethod() {
+		String code = textArea.getText();
+		String param = null;
+		String result = null;
+		try {
+			result = RemoteHelper.getInstance().getExecuteService().execute(code, "");
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		return result;
+	}
+
 	class SaveActionListener implements ActionListener {
 
-		//@Override
+		// @Override
 		public void actionPerformed(ActionEvent e) {
 			String code = textArea.getText();
 			try {
