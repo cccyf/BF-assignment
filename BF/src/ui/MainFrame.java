@@ -7,6 +7,7 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -31,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SelectionModel;
@@ -45,7 +47,7 @@ public class MainFrame extends JFrame {
 	private JLabel newFile;
 	private JLabel saveFile;
 	private JLabel runFile;
-	private JLabel login;
+	private JLabel log;
 	private JLabel delete;
 	private JLabel undo;
 	private JLabel redo;
@@ -56,11 +58,13 @@ public class MainFrame extends JFrame {
 	private DefaultListModel fileNames;
 	private JList fileVersions;
 	private DefaultListModel versions;
-    private String admin;
-   
+	private String admin;
+	private JFrame frame;
+
 	public MainFrame() {
 		// 创建窗体
-		JFrame frame = new JFrame("BF Client");
+	    frame = new JFrame("BF Server");
+		//frame.setName("BF Server");
 		// frame.setLayout(new BorderLayout());
 		frame.setLayout(null);
 		/*
@@ -80,27 +84,44 @@ public class MainFrame extends JFrame {
 
 		user = new JPanel();
 		user.setBounds(0, 0, 60, 472);
-		//Color lightBlue = new Color(240,255,255);
-		//Color lightPink = new Color(255,235,225);
+		// Color lightBlue = new Color(240,255,255);
+		// Color lightPink = new Color(255,235,225);
 		user.setBackground(Color.white);
 		user.setLayout(new GridLayout(10, 1));
 		
+
 		userLabel = new JLabel("Hello");// userLabel.addMouseListener(new
 										// UserItemMouseAdapter());
+		userLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		userLabel.setVerticalAlignment(SwingConstants.CENTER);
 		newFile = new JLabel("new");
 		newFile.addMouseListener(new UserItemMouseAdapter());
+		newFile.setHorizontalAlignment(SwingConstants.CENTER);
+		newFile.setVerticalAlignment(SwingConstants.CENTER);
 		saveFile = new JLabel("save");
 		saveFile.addMouseListener(new SaveMouseListener());
+		saveFile.setHorizontalAlignment(SwingConstants.CENTER);
+		saveFile.setVerticalAlignment(SwingConstants.CENTER);
 		runFile = new JLabel("run");
 		runFile.addMouseListener(new UserItemMouseAdapter());
-		login = new JLabel("log in");
-		login.addMouseListener(new UserItemMouseAdapter());
+		runFile.setHorizontalAlignment(SwingConstants.CENTER);
+		runFile.setVerticalAlignment(SwingConstants.CENTER);
+		log = new JLabel("log in");
+		log.addMouseListener(new UserItemMouseAdapter());
+		log.setHorizontalAlignment(SwingConstants.CENTER);
+		log.setVerticalAlignment(SwingConstants.CENTER);
 		delete = new JLabel("delete");
 		delete.addMouseListener(new deleteMouseListener());
+		delete.setHorizontalAlignment(SwingConstants.CENTER);
+		delete.setVerticalAlignment(SwingConstants.CENTER);
 		undo = new JLabel("undo");
 		redo = new JLabel("redo");
+		undo.setHorizontalAlignment(SwingConstants.CENTER);
+		undo.setVerticalAlignment(SwingConstants.CENTER);
+		redo.setHorizontalAlignment(SwingConstants.CENTER);
+		redo.setVerticalAlignment(SwingConstants.CENTER);
 		user.add(userLabel);
-		user.add(login);
+		user.add(log);
 		user.add(newFile);
 		user.add(saveFile);
 		user.add(delete);
@@ -108,9 +129,9 @@ public class MainFrame extends JFrame {
 		user.add(undo);
 		user.add(redo);
 
-
 		fileNames = new DefaultListModel();
-		//fileNames.addElement(newFile);
+
+		// fileNames.addElement(newFile);
 		fileNames.addElement("a");
 		fileNames.addElement("b");
 		fileNames.addElement("c");
@@ -118,7 +139,6 @@ public class MainFrame extends JFrame {
 		fileList.setBackground(Color.lightGray);
 		fileList.setForeground(Color.WHITE);
 		fileList.setFont(this.getFont());
-
 		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		fileList.setBounds(62, 0, 86, 300);
@@ -206,13 +226,26 @@ public class MainFrame extends JFrame {
 		frame.add(fileList);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(750, 480);
-		frame.setLocation(300, 100);
+		Dimension fraDim = Toolkit.getDefaultToolkit().getScreenSize();
+		frame.setLocation((fraDim.width - 750) / 2, (fraDim.height - 480) / 2);
 		frame.setVisible(true);
 		/*
 		 * System.out.println(scroll.getSize());
 		 * System.out.println(twoArgs.getSize());
 		 * System.out.println(argsArea.getSize());
 		 */
+	}
+
+	public void log() {
+		if (log.getText() == "log in") {
+			log.setText("log out");
+		} else {
+			log.setText("log in");
+		}
+	}
+
+	public void setUserName(String name) {
+		userLabel.setText(name);
 	}
 
 	class UserItemMouseAdapter extends MouseAdapter {
@@ -225,31 +258,36 @@ public class MainFrame extends JFrame {
 			} else if (cmd == saveFile) {
 
 			} else if (cmd == newFile) {
-			}else if(cmd==login){
-				//String inputValue = JOptionPane.showInputDialog("Please input a value"); 
-			
+			} else if (cmd == log) {
+				createLog();
 			}
 		}
-
+		
 
 	}
-
-/*	class MenuItemActionListener implements ActionListener {
-		/**
-		 * 子菜单响应事件
-		 */
-		// @Override
-		/*public void actionPerformed(ActionEvent e) {
-			String cmd = e.getActionCommand();
-			if (cmd.equals("Open")) {
-				textArea.setText("Open");
-			} else if (cmd.equals("Save")) {
-				textArea.setText("Save");
-			} else if (cmd.equals("Run")) {
-				resultArea.setText(runMethod());
+	public void createLog(){
+		if (log.getText() == "log in") {
+			LoginDialog logDia = new LoginDialog(this, "Log in", true);
+			logDia.setVisible(true);
+		} else {
+			try {
+				RemoteHelper.getInstance().getUserService().logout(userLabel.getText());
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
 			}
 		}
-	}*/
+	}
+
+	/*
+	 * class MenuItemActionListener implements ActionListener { /** 子菜单响应事件
+	 */
+	// @Override
+	/*
+	 * public void actionPerformed(ActionEvent e) { String cmd =
+	 * e.getActionCommand(); if (cmd.equals("Open")) { textArea.setText("Open");
+	 * } else if (cmd.equals("Save")) { textArea.setText("Save"); } else if
+	 * (cmd.equals("Run")) { resultArea.setText(runMethod()); } } }
+	 */
 
 	public String runMethod() {
 		String code = textArea.getText();
@@ -263,13 +301,13 @@ public class MainFrame extends JFrame {
 		return result;
 	}
 
-	class SaveMouseListener extends MouseAdapter{
+	class SaveMouseListener extends MouseAdapter {
 
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
 			String code = textArea.getText();
 			try {
-				RemoteHelper.getInstance().getIOService().writeFile(code, admin,"code");
+				RemoteHelper.getInstance().getIOService().writeFile(code, admin, "code");
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
@@ -277,10 +315,10 @@ public class MainFrame extends JFrame {
 
 	}
 
-	class deleteMouseListener extends MouseAdapter{
+	class deleteMouseListener extends MouseAdapter {
 
 		public void mouseClicked(MouseEvent e) {
-			
+
 		}
 
 	}

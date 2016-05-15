@@ -8,12 +8,17 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public boolean login(String username, String password) throws RemoteException {
+		
 		return true;
 	}
 
 	@Override
 	public boolean logout(String username) throws RemoteException {
 		return true;
+	}
+	@Override
+	public boolean register(String name,String pass) throws RemoteException {
+		return false;
 	}
 
 }
