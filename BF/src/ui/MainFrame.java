@@ -63,8 +63,8 @@ public class MainFrame extends JFrame {
 
 	public MainFrame() {
 		// 创建窗体
-	    frame = new JFrame("BF Server");
-		//frame.setName("BF Server");
+		frame = new JFrame("BF Server");
+		// frame.setName("BF Server");
 		// frame.setLayout(new BorderLayout());
 		frame.setLayout(null);
 		/*
@@ -88,7 +88,6 @@ public class MainFrame extends JFrame {
 		// Color lightPink = new Color(255,235,225);
 		user.setBackground(Color.white);
 		user.setLayout(new GridLayout(10, 1));
-		
 
 		userLabel = new JLabel("Hello");// userLabel.addMouseListener(new
 										// UserItemMouseAdapter());
@@ -99,7 +98,7 @@ public class MainFrame extends JFrame {
 		newFile.setHorizontalAlignment(SwingConstants.CENTER);
 		newFile.setVerticalAlignment(SwingConstants.CENTER);
 		saveFile = new JLabel("save");
-		saveFile.addMouseListener(new SaveMouseListener());
+		saveFile.addMouseListener(new UserItemMouseAdapter());
 		saveFile.setHorizontalAlignment(SwingConstants.CENTER);
 		saveFile.setVerticalAlignment(SwingConstants.CENTER);
 		runFile = new JLabel("run");
@@ -130,11 +129,11 @@ public class MainFrame extends JFrame {
 		user.add(redo);
 
 		fileNames = new DefaultListModel();
-
 		// fileNames.addElement(newFile);
-		fileNames.addElement("a");
-		fileNames.addElement("b");
-		fileNames.addElement("c");
+		/*
+		 * fileNames.addElement("a"); fileNames.addElement("b");
+		 * fileNames.addElement("c");
+		 */
 		fileList = new JList(fileNames);
 		fileList.setBackground(Color.lightGray);
 		fileList.setForeground(Color.WHITE);
@@ -164,8 +163,9 @@ public class MainFrame extends JFrame {
 		JScrollPane scroll = new JScrollPane(textArea);
 		scroll.setBounds(150, 0, 598, 300);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		Color middleGray = new Color(96, 96, 96);
-		textArea.setBackground(middleGray);
+		Color middleGray1 = new Color(130, 130, 130);
+		Color middleGray2 = new Color(150, 150, 150);
+		textArea.setBackground(middleGray1);
 		textArea.setForeground(Color.lightGray);
 		scroll.setOpaque(true);
 		frame.add(scroll);
@@ -236,6 +236,14 @@ public class MainFrame extends JFrame {
 		 */
 	}
 
+	public void setFileList(String[] str) {
+		fileNames.removeAllElements();
+		for (int num = 0; num < str.length; num++) {
+			fileNames.addElement(str[num]);
+		}
+		fileList.repaint();
+	}
+
 	public void log() {
 		if (log.getText() == "log in") {
 			log.setText("log out");
@@ -245,7 +253,19 @@ public class MainFrame extends JFrame {
 	}
 
 	public void setUserName(String name) {
-		userLabel.setText(name);
+		admin = name;
+		System.out.println(admin);
+		userLabel.setText("Hi, " + name + " .");
+	}
+
+	public String getUserName() {
+		System.out.println(admin);
+		return admin;
+
+	}
+
+	public String getTextArea() {
+		return textArea.getText();
 	}
 
 	class UserItemMouseAdapter extends MouseAdapter {
@@ -256,16 +276,21 @@ public class MainFrame extends JFrame {
 			if (cmd == runFile) {
 				resultArea.setText(runMethod());
 			} else if (cmd == saveFile) {
-
+				createSave();
 			} else if (cmd == newFile) {
 			} else if (cmd == log) {
 				createLog();
 			}
 		}
-		
 
 	}
-	public void createLog(){
+
+	public void createSave() {
+		SaveDialog saveDia = new SaveDialog(this, "Save as...", true);
+		saveDia.setVisible(true);
+	}
+
+	public void createLog() {
 		if (log.getText() == "log in") {
 			LoginDialog logDia = new LoginDialog(this, "Log in", true);
 			logDia.setVisible(true);
@@ -299,20 +324,6 @@ public class MainFrame extends JFrame {
 			e1.printStackTrace();
 		}
 		return result;
-	}
-
-	class SaveMouseListener extends MouseAdapter {
-
-		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
-			String code = textArea.getText();
-			try {
-				RemoteHelper.getInstance().getIOService().writeFile(code, admin, "code");
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
-		}
-
 	}
 
 	class deleteMouseListener extends MouseAdapter {

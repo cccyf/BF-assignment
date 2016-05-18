@@ -31,7 +31,8 @@ public class LoginDialog extends Dialog {
 	JButton registerB;
 	JLabel out;
 	MainFrame jf;
-    String nameInput;
+	String nameInput;
+
 	public LoginDialog(MainFrame owner, String title, boolean modal) {
 		super(owner, title, modal);
 		jf = owner;
@@ -109,12 +110,12 @@ public class LoginDialog extends Dialog {
 		// this.dispose();
 		this.removeAll();
 		this.repaint();
-		out = new JLabel(output);//,Label.CENTER);
+		out = new JLabel(output);// ,Label.CENTER);
 		out.setHorizontalAlignment(SwingConstants.CENTER);
 		out.setVerticalAlignment(SwingConstants.TOP);
 		out.setBounds(50, 60, 200, 60);
-		//out.setText(output);
-	//	out.setDefaultLocale(Label.CENTER);
+		// out.setText(output);
+		// out.setDefaultLocale(Label.CENTER);
 		JButton back = new JButton("back");
 		back.setBounds(110, 110, 80, 60);
 		back.addActionListener(new backActionListener());
@@ -141,7 +142,7 @@ public class LoginDialog extends Dialog {
 				initDia();
 				rep();
 			} else {
-			//jf.setUserName("Hi , "+nameInput+"");
+				// jf.setUserName("Hi , "+nameInput+"");
 				disposeThis();
 			}
 
@@ -160,12 +161,15 @@ public class LoginDialog extends Dialog {
 			String out = "Wrong!";
 			if (cmd == "Log In") {
 				nameInput = userT.getText();
-				String pass = passwordP.getPassword().toString();
+				// String pass = passwordP.getPassword().toString();
+				char[] password = passwordP.getPassword();
+				String pass = new String(password);
 				try {
 					boolean canLogIn = RemoteHelper.getInstance().getUserService().login(nameInput, pass);
 					if (canLogIn) {
 						out = "Success!";
-						jf.setUserName("Hi , "+nameInput+"");
+						jf.setUserName(nameInput);
+						setList();
 					}
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
@@ -173,12 +177,14 @@ public class LoginDialog extends Dialog {
 
 			} else if (cmd == "Register") {
 				nameInput = userT.getText();
-				String pass = passwordP.getPassword().toString();
+				char[] password = passwordP.getPassword();
+				String pass = new String(password);
+				// System.out.println(pass);
 				try {
 					boolean canRegister = RemoteHelper.getInstance().getUserService().register(nameInput, pass);
 					if (canRegister) {
 						out = "Welcome!";
-						jf.setUserName("Hi , "+nameInput+"");
+						jf.setUserName(nameInput);
 					} else {
 						out = "Already existed!";
 					}
@@ -191,6 +197,17 @@ public class LoginDialog extends Dialog {
 
 		}
 
+	}
+
+	public void setList() {
+		try {
+			jf.setFileList(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
+
+			System.out.println(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -8,3 +8,5 @@
 *.class
 
 BFServer/bin/rmi/DataRemoteObject.class
+
+*.class
