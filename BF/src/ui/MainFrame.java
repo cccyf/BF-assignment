@@ -33,6 +33,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SelectionModel;
@@ -60,37 +62,19 @@ public class MainFrame extends JFrame {
 	private DefaultListModel versions;
 	private String admin;
 	private JFrame frame;
+	// private boolean logOut = false;
 
 	public MainFrame() {
 		// 创建窗体
 		frame = new JFrame("BF Server");
-		// frame.setName("BF Server");
-		// frame.setLayout(new BorderLayout());
 		frame.setLayout(null);
-		/*
-		 * JMenuBar menuBar = new JMenuBar(); JMenu fileMenu = new
-		 * JMenu("File"); menuBar.add(fileMenu); JMenuItem newMenuItem = new
-		 * JMenuItem("New"); fileMenu.add(newMenuItem); JMenuItem openMenuItem =
-		 * new JMenuItem("Open"); fileMenu.add(openMenuItem); JMenuItem
-		 * saveMenuItem = new JMenuItem("Save"); fileMenu.add(saveMenuItem);
-		 * JMenuItem runMenuItem = new JMenuItem("Run");
-		 * fileMenu.add(runMenuItem); frame.setJMenuBar(menuBar);
-		 * 
-		 * newMenuItem.addActionListener(new MenuItemActionListener());
-		 * openMenuItem.addActionListener(new MenuItemActionListener());
-		 * saveMenuItem.addActionListener(new SaveActionListener());
-		 * runMenuItem.addActionListener(new MenuItemActionListener());
-		 */
 
 		user = new JPanel();
 		user.setBounds(0, 0, 60, 472);
-		// Color lightBlue = new Color(240,255,255);
-		// Color lightPink = new Color(255,235,225);
 		user.setBackground(Color.white);
 		user.setLayout(new GridLayout(10, 1));
 
-		userLabel = new JLabel("Hello");// userLabel.addMouseListener(new
-										// UserItemMouseAdapter());
+		userLabel = new JLabel("Hello");
 		userLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		userLabel.setVerticalAlignment(SwingConstants.CENTER);
 		newFile = new JLabel("new");
@@ -129,35 +113,30 @@ public class MainFrame extends JFrame {
 		user.add(redo);
 
 		fileNames = new DefaultListModel();
-		// fileNames.addElement(newFile);
-		/*
-		 * fileNames.addElement("a"); fileNames.addElement("b");
-		 * fileNames.addElement("c");
-		 */
+
 		fileList = new JList(fileNames);
+
 		fileList.setBackground(Color.lightGray);
 		fileList.setForeground(Color.WHITE);
 		fileList.setFont(this.getFont());
 		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+		this.setListSelected();
 		fileList.setBounds(62, 0, 86, 300);
 		versions = new DefaultListModel();
-		versions.addElement("a");
-		versions.addElement("b");
 		fileVersions = new JList(versions);
 		fileVersions.setBackground(Color.lightGray);
 		fileVersions.setForeground(Color.white);
 		fileVersions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		fileVersions.setBounds(62, 302, 86, 176);
+		this.setVersionSelected();
 		frame.add(fileVersions);
-		// frame.setUndecorated(true);
-		// frame.setOpacity(0.8f);
+
 		ImageIcon frameImage = new ImageIcon("/Users/chengyunfei/Desktop/壁纸/20100819001418.jpeg");
 		frame.setIconImage(frameImage.getImage());
 		frame.add(user);
 		textArea = new JTextArea("Start coding...");
 		textArea.setMargin(new Insets(10, 10, 10, 10));
-		// textArea.setBounds(150,0,500,300);
+
 		textArea.setLineWrap(true);
 		textArea.setDragEnabled(true);
 		JScrollPane scroll = new JScrollPane(textArea);
@@ -175,7 +154,7 @@ public class MainFrame extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				textArea.setForeground(Color.WHITE);
 				if (hasTyped) {
-					// textArea.setText(textArea.getText()+e.getKeyChar());
+
 				} else {
 					textArea.setText("");
 					hasTyped = true;
@@ -183,7 +162,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		JPanel twoArgs = new JPanel();
-		// twoArgs.setLayout(new GridLayout(1, 2));
+
 		twoArgs.setLayout(null);
 		twoArgs.setOpaque(true);
 		twoArgs.setBounds(150, 302, 600, 176);
@@ -193,7 +172,7 @@ public class MainFrame extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				argsArea.setForeground(Color.WHITE);
 				if (argsHasTyped) {
-					// textArea.setText(textArea.getText()+e.getKeyChar());
+
 				} else {
 					argsArea.setText("");
 					argsHasTyped = true;
@@ -204,7 +183,7 @@ public class MainFrame extends JFrame {
 		argsArea.setForeground(Color.white);
 		JScrollPane argScr = new JScrollPane(argsArea);
 		argScr.setBounds(0, 0, 298, 176);
-		// argScr.setBackground();
+
 		argScr.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		argsArea.setBounds(0, 0, 298, 176);
 		// frame.add(argsArea, BorderLayout.SOUTH);
@@ -229,19 +208,81 @@ public class MainFrame extends JFrame {
 		Dimension fraDim = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation((fraDim.width - 750) / 2, (fraDim.height - 480) / 2);
 		frame.setVisible(true);
-		/*
-		 * System.out.println(scroll.getSize());
-		 * System.out.println(twoArgs.getSize());
-		 * System.out.println(argsArea.getSize());
-		 */
+
 	}
 
 	public void setFileList(String[] str) {
 		fileNames.removeAllElements();
-		for (int num = 0; num < str.length; num++) {
-			fileNames.addElement(str[num]);
+		if (str != null) {
+			for (int num = 0; num < str.length; num++) {
+				fileNames.addElement(str[num]);
+			}
 		}
 		fileList.repaint();
+	}
+
+	/*
+	 * public void setLogOut() { logOut = false; }
+	 */
+
+	public void setListSelected() {
+		fileList.addListSelectionListener(new ListSelectionListener() {
+
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+
+				String selected = null;
+				// if (logOut == false) {
+				if (!fileList.isSelectionEmpty()) {
+					selected = fileList.getSelectedValue().toString();
+					// System.out.println(selected);
+					try {
+						textArea.setText(RemoteHelper.getInstance().getIOService().readFile(admin, selected, null));
+						setVersions(selected);
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
+		});
+	}
+
+	public void setVersionSelected() {
+		fileVersions.addListSelectionListener(new ListSelectionListener() {
+
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				String selected = null;
+				if (!fileVersions.isSelectionEmpty()) {
+					selected = fileVersions.getSelectedValue().toString();
+					try {
+						textArea.setText(RemoteHelper.getInstance().getIOService().readFile(admin,
+								fileList.getSelectedValue().toString(), selected));
+						// setVersions(selected);
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+
+		});
+	}
+
+	public void setVersions(String fileName) {
+		try {
+			versions.removeAllElements();
+			String[] vers = RemoteHelper.getInstance().getIOService().readVersions(admin, fileName);
+			for (int index = 0; index < vers.length; index++) {
+				versions.addElement(vers[index]);
+			}
+			repaint();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void log() {
@@ -254,12 +295,12 @@ public class MainFrame extends JFrame {
 
 	public void setUserName(String name) {
 		admin = name;
-		System.out.println(admin);
+		// System.out.println(admin);
 		userLabel.setText("Hi, " + name + " .");
 	}
 
 	public String getUserName() {
-		System.out.println(admin);
+		// System.out.println(admin);
 		return admin;
 
 	}
@@ -276,8 +317,34 @@ public class MainFrame extends JFrame {
 			if (cmd == runFile) {
 				resultArea.setText(runMethod());
 			} else if (cmd == saveFile) {
-				createSave();
+				// createSave("Save as...");
+				if (admin != null) {
+					try {
+						String used = null;
+						used = RemoteHelper.getInstance().getIOService().readFile(admin,
+								fileList.getSelectedValue().toString(), null);
+						if ((used == null) && (textArea.getText() == null)) {
+							createSaveFailure();
+						} else if (textArea.getText().equals(used)) {
+							createSaveFailure();
+						} else {
+							boolean canSave = RemoteHelper.getInstance().getIOService().writeFile(textArea.getText(),
+									admin, fileList.getSelectedValue().toString());
+							if (canSave) {
+								createSaveSucess();
+								setVersions(fileList.getSelectedValue().toString());
+								repaint();
+							}
+						}
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				} else {
+					createSaveFailure();
+				}
 			} else if (cmd == newFile) {
+				createNew("New");
 			} else if (cmd == log) {
 				createLog();
 			}
@@ -285,10 +352,33 @@ public class MainFrame extends JFrame {
 
 	}
 
-	public void createSave() {
-		SaveDialog saveDia = new SaveDialog(this, "Save as...", true);
+	private void createSaveFailure() {
+		SaveStateDia saveFailure = new SaveStateDia(this, "Failure", true);
+		saveFailure.setVisible(true);
+	}
+
+	private void createSaveSucess() {
+		// TODO Auto-generated method stub
+		SaveStateDia saveDia = new SaveStateDia(this, "Success", true);
 		saveDia.setVisible(true);
 	}
+
+	public void createNew(String in) {
+		NewFileDialog newFileDia = new NewFileDialog(this, in, true);
+		newFileDia.setVisible(true);
+	}
+
+	public void setItemSelected(String sel) {
+		int index = fileNames.indexOf(sel);
+		// System.out.println(index);
+		this.fileList.setSelectedValue(sel, true);
+	}
+	/*
+	 * public void setTextArea(String name) { try {
+	 * textArea.setText(RemoteHelper.getInstance().getIOService().readFile(
+	 * admin, name, null)); } catch (RemoteException e1) { // TODO
+	 * Auto-generated catch block e1.printStackTrace(); } }
+	 */
 
 	public void createLog() {
 		if (log.getText() == "log in") {
@@ -296,11 +386,38 @@ public class MainFrame extends JFrame {
 			logDia.setVisible(true);
 		} else {
 			try {
-				RemoteHelper.getInstance().getUserService().logout(userLabel.getText());
+				boolean canLogOut = RemoteHelper.getInstance().getUserService().logout(admin);
+				if (canLogOut) {
+					// fileNames.removeAllElements();
+					// this.fileList = new JList();
+					// repaint();
+					// logOut = true;
+					// this.setListSelected();
+					// this.fileVersions.removeAll();
+					this.allSetInitial();
+				}
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	public void allSetInitial() {
+		textArea.setText(null);
+		resultArea.setText(null);
+		argsArea.setText(null);
+		userLabel.setText("Hello");
+		this.log();
+		// admin = null;
+		// this.fileList.addMouseListener(null);
+		fileVersions.clearSelection();
+		fileList.clearSelection();
+		fileNames.removeAllElements();
+		versions.removeAllElements();
+
+		// this.repaint();
+		admin = null;
+		this.repaint();
 	}
 
 	/*

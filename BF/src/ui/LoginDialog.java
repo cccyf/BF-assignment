@@ -124,35 +124,32 @@ public class LoginDialog extends Dialog {
 		this.repaint();
 	}
 
-	public void rem() {
+	/*public void rem() {
 		this.removeAll();
 		repaint();
-	}
+	}*/
 
-	public void rep() {
+/*	public void rep() {
 		repaint();
-	}
+	}*/
 
 	class backActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
 			String result = out.getText();
 			if ((result == "Wrong!") || (result == "Already existed!")) {
-				rem();
+				removeAll();
 				initDia();
-				rep();
+				repaint();
 			} else {
 				// jf.setUserName("Hi , "+nameInput+"");
-				disposeThis();
+				dispose();
 			}
 
 		}
 
 	}
 
-	public void disposeThis() {
-		this.dispose();
-	}
 
 	class ButtonActionListener implements ActionListener {
 
@@ -161,7 +158,6 @@ public class LoginDialog extends Dialog {
 			String out = "Wrong!";
 			if (cmd == "Log In") {
 				nameInput = userT.getText();
-				// String pass = passwordP.getPassword().toString();
 				char[] password = passwordP.getPassword();
 				String pass = new String(password);
 				try {
@@ -169,7 +165,11 @@ public class LoginDialog extends Dialog {
 					if (canLogIn) {
 						out = "Success!";
 						jf.setUserName(nameInput);
+						jf.setListSelected();
+						jf.setVersionSelected();
+						//jf.setLogOut();
 						setList();
+						
 					}
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
@@ -185,6 +185,8 @@ public class LoginDialog extends Dialog {
 					if (canRegister) {
 						out = "Welcome!";
 						jf.setUserName(nameInput);
+						jf.setListSelected();
+						jf.log();
 					} else {
 						out = "Already existed!";
 					}
@@ -202,8 +204,8 @@ public class LoginDialog extends Dialog {
 	public void setList() {
 		try {
 			jf.setFileList(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
-
-			System.out.println(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
+            jf.log();
+		//	System.out.println(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

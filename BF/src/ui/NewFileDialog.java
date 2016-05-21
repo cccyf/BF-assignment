@@ -16,14 +16,14 @@ import javax.swing.SwingConstants;
 
 import rmi.RemoteHelper;
 
-public class SaveDialog extends Dialog {
+public class NewFileDialog extends Dialog {
 	JLabel nameLabel;
 	JLabel txtLabel;
 	JTextArea nameArea;
 	JButton confirmBt;
 	MainFrame frame;
 
-	public SaveDialog(MainFrame owner, String title, boolean modal) {
+	public NewFileDialog(MainFrame owner, String title, boolean modal) {
 		super(owner, title, modal);
 		frame = owner;
 		Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -65,12 +65,13 @@ public class SaveDialog extends Dialog {
 		if (frame.getUserName() != null) {
 			String name = nameArea.getText() + txtLabel.getText();
 			String userId = frame.getUserName();
-			String file = frame.getTextArea();
+			//String file = frame.getTextArea();
 			try {
-				boolean canWrite = RemoteHelper.getInstance().getIOService().writeFile(file, userId, name);
-				System.out.println(userId);
+				boolean canWrite = RemoteHelper.getInstance().getIOService().newFile(userId, name);
+		//		System.out.println(userId);
 				if (canWrite) {
 					setList();
+					//frame.setTextArea(name);
 					this.dispose();
 				} else {
 					this.removeAll();
@@ -131,7 +132,8 @@ public class SaveDialog extends Dialog {
 	public void setList() {
 		try {
 			frame.setFileList(RemoteHelper.getInstance().getIOService().readFileList(frame.getUserName()));
-			System.out.println(RemoteHelper.getInstance().getIOService().readFileList(frame.getUserName()));
+			frame.setItemSelected(new String(nameArea.getText())+".txt");
+		//	System.out.println(nameArea.getText());
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

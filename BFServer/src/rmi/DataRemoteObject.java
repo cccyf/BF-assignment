@@ -10,7 +10,7 @@ import serviceImpl.ExecuteServiceImpl;
 import serviceImpl.IOServiceImpl;
 import serviceImpl.UserServiceImpl;
 
-public class DataRemoteObject extends UnicastRemoteObject implements IOService, UserService,ExecuteService{
+public class DataRemoteObject extends UnicastRemoteObject implements IOService, UserService, ExecuteService {
 	/**
 	 * 
 	 */
@@ -18,26 +18,30 @@ public class DataRemoteObject extends UnicastRemoteObject implements IOService, 
 	private IOService iOService;
 	private UserService userService;
 	private ExecuteService executeService;
+
 	protected DataRemoteObject() throws RemoteException {
 		iOService = new IOServiceImpl();
 		userService = new UserServiceImpl();
 		executeService = new ExecuteServiceImpl();
 	}
-
 	@Override
-	public boolean writeFile(String file, String userId, String fileName) throws RemoteException{
+	public boolean newFile( String userId, String fileName)throws RemoteException{
+		return iOService.newFile(userId, fileName);
+	}
+	@Override
+	public boolean writeFile(String file, String userId, String fileName) throws RemoteException {
 		// TODO Auto-generated method stub
 		return iOService.writeFile(file, userId, fileName);
 	}
 
 	@Override
-	public String readFile(String userId, String fileName) throws RemoteException{
+	public String readFile(String userId, String fileName, String version) throws RemoteException {
 		// TODO Auto-generated method stub
-		return iOService.readFile(userId, fileName);
+		return iOService.readFile(userId, fileName, version);
 	}
 
 	@Override
-	public String[] readFileList(String userId) throws RemoteException{
+	public String[] readFileList(String userId) throws RemoteException {
 		// TODO Auto-generated method stub
 		return iOService.readFileList(userId);
 	}
@@ -65,5 +69,9 @@ public class DataRemoteObject extends UnicastRemoteObject implements IOService, 
 		// TODO Auto-generated method stub
 		return userService.register(name, pass);
 	}
+	
+	public String[] readVersions(String userId, String fileName) throws RemoteException{
+		return iOService.readVersions(userId, fileName);
 
+	}
 }
