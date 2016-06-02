@@ -399,7 +399,7 @@ public class MainFrame extends JFrame {
 						}
 						// System.out.println(b);
 					}
-				}else{
+				} else {
 					hasChosen = true;
 				}
 			}
@@ -583,14 +583,16 @@ public class MainFrame extends JFrame {
 
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
-			timer.cancel();
-			hasCanceled = true;
-			hasUndo = true;
-			String contents = stack.popUndo();
-			// System.out.println(contents);
-			if (contents != "0") {
-				// hasUndo = true;
-				textArea.setText(contents);
+			if (admin != null) {
+				timer.cancel();
+				hasCanceled = true;
+				hasUndo = true;
+				String contents = stack.popUndo();
+				// System.out.println(contents);
+				if (contents != "0") {
+					// hasUndo = true;
+					textArea.setText(contents);
+				}
 			}
 		}
 
@@ -708,29 +710,18 @@ public class MainFrame extends JFrame {
 	}
 
 	public void allSetInitial() {
-		/*textArea.setText(null);
-		resultArea.setText(null);
-		argsArea.setText(null);
-		userLabel.setText("Hello");
-		this.log();
-		// admin = null;
-		// this.fileList.addMouseListener(null);
-		fileVersions.clearSelection();
-		fileList.clearSelection();
-		fileNames.removeAllElements();
-		versions.removeAllElements();
-		// this.repaint();
-		admin = null;
-		hasSaved = true;
-		hasCanceled = false;
-		hasUndo = false;
-		hasChosen = false;
-		stack = null;
-		stacks = new LinkedList<StackInfo>();
-		timer.cancel();
-		this.repaint();*/
-        new MainFrame();
-        this.dispose();
+		/*
+		 * textArea.setText(null); resultArea.setText(null);
+		 * argsArea.setText(null); userLabel.setText("Hello"); this.log(); //
+		 * admin = null; // this.fileList.addMouseListener(null);
+		 * fileVersions.clearSelection(); fileList.clearSelection();
+		 * fileNames.removeAllElements(); versions.removeAllElements(); //
+		 * this.repaint(); admin = null; hasSaved = true; hasCanceled = false;
+		 * hasUndo = false; hasChosen = false; stack = null; stacks = new
+		 * LinkedList<StackInfo>(); timer.cancel(); this.repaint();
+		 */
+		new MainFrame();
+		this.dispose();
 	}
 
 	public void createFileStacks() {
