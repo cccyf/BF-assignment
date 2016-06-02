@@ -2,10 +2,13 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.font.*;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -20,6 +23,7 @@ import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 
 import javax.swing.DefaultListModel;
+import javax.swing.GrayFilter;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -45,6 +49,7 @@ public class MainFrame extends JFrame {
 	private JTextArea textArea;
 	private JTextArea resultArea;
 	private JTextArea argsArea;
+	private JLabel photo;
 	private JLabel userLabel;
 	private JLabel newFile;
 	private JLabel saveFile;
@@ -62,43 +67,64 @@ public class MainFrame extends JFrame {
 	private DefaultListModel versions;
 	private String admin;
 	private JFrame frame;
+	boolean hasChosen = false;
+	Color userColor = new Color(205, 255, 243);
+	Color userIn = new Color(190, 240, 228);
+	Color userPress = new Color(180, 230, 218);
+	//boolean hasUndo = false;
+	//boolean canUndo = false;
 	// private boolean logOut = false;
 
 	public MainFrame() {
 		// 创建窗体
 		frame = new JFrame("BF Server");
 		frame.setLayout(null);
-
+		// Color userColor = new Color(205, 255, 243);
+		// Color userIn = new Color(200,250,238);
 		user = new JPanel();
-		user.setBounds(0, 0, 60, 472);
-		user.setBackground(Color.white);
-		user.setLayout(new GridLayout(10, 1));
 
-		userLabel = new JLabel("Hello");
+		user.setBounds(0, 0, 60, 472);
+		user.setBackground(userColor);
+		user.setLayout(new GridLayout(8, 1));
+		// photo = new JLabel();
+		userLabel = new JLabel("userID");
+		userLabel.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
+		// userLabel.setBackground(Color.CYAN);
+		// userLabel.setOpaque(true);
+		// userLabel.
 		userLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		userLabel.setVerticalAlignment(SwingConstants.CENTER);
 		newFile = new JLabel("new");
+		newFile.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		newFile.addMouseListener(new UserItemMouseAdapter());
 		newFile.setHorizontalAlignment(SwingConstants.CENTER);
 		newFile.setVerticalAlignment(SwingConstants.CENTER);
 		saveFile = new JLabel("save");
+		saveFile.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		saveFile.addMouseListener(new UserItemMouseAdapter());
 		saveFile.setHorizontalAlignment(SwingConstants.CENTER);
 		saveFile.setVerticalAlignment(SwingConstants.CENTER);
 		runFile = new JLabel("run");
+		runFile.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		runFile.addMouseListener(new UserItemMouseAdapter());
 		runFile.setHorizontalAlignment(SwingConstants.CENTER);
 		runFile.setVerticalAlignment(SwingConstants.CENTER);
 		log = new JLabel("log in");
+		log.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		log.addMouseListener(new UserItemMouseAdapter());
 		log.setHorizontalAlignment(SwingConstants.CENTER);
 		log.setVerticalAlignment(SwingConstants.CENTER);
 		delete = new JLabel("delete");
+		delete.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		delete.addMouseListener(new deleteMouseListener());
 		delete.setHorizontalAlignment(SwingConstants.CENTER);
 		delete.setVerticalAlignment(SwingConstants.CENTER);
 		undo = new JLabel("undo");
+		undo.addMouseListener(new undoListener());
+		undo.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		redo = new JLabel("redo");
+		redo.addMouseListener(new redoListener());
+		redo.setFont(new java.awt.Font("Comic Sans MS", 0, 15));
 		undo.setHorizontalAlignment(SwingConstants.CENTER);
 		undo.setVerticalAlignment(SwingConstants.CENTER);
 		redo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -107,106 +133,145 @@ public class MainFrame extends JFrame {
 		user.add(log);
 		user.add(newFile);
 		user.add(saveFile);
-		user.add(delete);
+		// user.add(delete);
 		user.add(runFile);
 		user.add(undo);
 		user.add(redo);
-
+		Color listColor = new Color(166, 253, 232);
 		fileNames = new DefaultListModel();
 
 		fileList = new JList(fileNames);
 
-		fileList.setBackground(Color.lightGray);
-		fileList.setForeground(Color.WHITE);
+		fileList.setBackground(listColor);
+		fileList.setForeground(Color.darkGray);
 		fileList.setFont(this.getFont());
 		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setListSelected();
-		fileList.setBounds(62, 0, 86, 300);
+		fileList.setBounds(62, 0, 186, 300);
 		versions = new DefaultListModel();
 		fileVersions = new JList(versions);
-		fileVersions.setBackground(Color.lightGray);
-		fileVersions.setForeground(Color.white);
+		fileVersions.setBackground(listColor);
+		fileVersions.setForeground(Color.darkGray);
 		fileVersions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		fileVersions.setBounds(62, 302, 86, 176);
+		fileVersions.setBounds(62, 302, 186, 176);
 		this.setVersionSelected();
 		frame.add(fileVersions);
 
-		ImageIcon frameImage = new ImageIcon("/Users/chengyunfei/Desktop/壁纸/20100819001418.jpeg");
-		frame.setIconImage(frameImage.getImage());
+		final ImageIcon frameImage = new ImageIcon("/Users/chengyunfei/Desktop/code.jpg");
+		// frame.setIconImage(frameImage.getImage());
 		frame.add(user);
-		textArea = new JTextArea("Start coding...");
-		textArea.setMargin(new Insets(10, 10, 10, 10));
+		textArea = new JTextArea() {
+			Image image = frameImage.getImage();
+			// Image grayImage = GrayFilter.createDisabledImage(image);//
+			// 这里要用到import
+			// javax.swing.GrayFilter;
+			{
+				setOpaque(false);
+			} // instance initializer
 
+			public void paint(Graphics g) {
+				g.drawImage(image, 0, 0, this);
+				super.paint(g);
+			}
+		};
+
+		// textArea
+		textArea.setMargin(new Insets(10, 10, 10, 10));
+		java.awt.Font textFont = new java.awt.Font("Monaco", 1, 15);
+		textArea.setFont(textFont);
 		textArea.setLineWrap(true);
 		textArea.setDragEnabled(true);
+
 		JScrollPane scroll = new JScrollPane(textArea);
-		scroll.setBounds(150, 0, 598, 300);
+		scroll.setBounds(250, 0, 478, 300);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		Color middleGray1 = new Color(130, 130, 130);
+		// Color listColor1 = new Color(206, 202, 232);
 		Color middleGray2 = new Color(150, 150, 150);
-		textArea.setBackground(middleGray1);
-		textArea.setForeground(Color.lightGray);
+		// textArea.setBackground(Color.pink);
+		textArea.setForeground(Color.darkGray);
 		scroll.setOpaque(true);
 		frame.add(scroll);
-
+		// textArea.setName("text");
 		// boolean hasTyped =false;
-		textArea.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				textArea.setForeground(Color.WHITE);
-				if (hasTyped) {
-
-				} else {
-					textArea.setText("");
-					hasTyped = true;
-				}
-			}
-		});
+		/*
+		 * textArea.addKeyListener(new KeyAdapter() { public void
+		 * keyPressed(KeyEvent e) { textArea.setForeground(Color.WHITE); if
+		 * (hasTyped) {
+		 * 
+		 * } else { textArea.setText(""); hasTyped = true; } } });
+		 */
 		JPanel twoArgs = new JPanel();
 
 		twoArgs.setLayout(null);
 		twoArgs.setOpaque(true);
-		twoArgs.setBounds(150, 302, 600, 176);
+		twoArgs.setBounds(250, 302, 600, 176);
 
-		argsArea = new JTextArea("args...");
-		argsArea.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				argsArea.setForeground(Color.WHITE);
-				if (argsHasTyped) {
+		argsArea = new JTextArea() {
+			final ImageIcon par = new ImageIcon("/Users/chengyunfei/Desktop/parameter.jpg");
+			Image image = par.getImage();
+			// Image grayImage = GrayFilter.createDisabledImage(image);//
+			// 这里要用到import
+			// javax.swing.GrayFilter;
+			{
+				setOpaque(false);
+			} // instance initializer
 
-				} else {
-					argsArea.setText("");
-					argsHasTyped = true;
-				}
+			public void paint(Graphics g) {
+				g.drawImage(image, 0, 0, this);
+				super.paint(g);
 			}
-		});
-		argsArea.setBackground(Color.gray);
-		argsArea.setForeground(Color.white);
+		};
+		/*
+		 * argsArea.addKeyListener(new KeyAdapter() { public void
+		 * keyPressed(KeyEvent e) { argsArea.setForeground(Color.WHITE); if
+		 * (argsHasTyped) {
+		 * 
+		 * } else { argsArea.setText(""); argsHasTyped = true; } } });
+		 */
+		// argsArea.setBackground(Color.lightGray);
+		argsArea.setForeground(Color.darkGray);
+		argsArea.setFont(textFont);
 		JScrollPane argScr = new JScrollPane(argsArea);
-		argScr.setBounds(0, 0, 298, 176);
+		argScr.setBounds(0, 0, 238, 176);
 
 		argScr.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		argsArea.setBounds(0, 0, 298, 176);
+		argsArea.setBounds(0, 0, 238, 176);
 		// frame.add(argsArea, BorderLayout.SOUTH);
 		// 显示结果
-		resultArea = new JTextArea();
-		resultArea.setText("result");
+		resultArea = new JTextArea() {
+			final ImageIcon res = new ImageIcon("/Users/chengyunfei/Desktop/result.jpg");
+			Image image = res.getImage();
+			// Image grayImage = GrayFilter.createDisabledImage(image);//
+			// 这里要用到import
+			// javax.swing.GrayFilter;
+			{
+				setOpaque(false);
+			} // instance initializer
+
+			public void paint(Graphics g) {
+				g.drawImage(image, 0, 0, this);
+				super.paint(g);
+			}
+		};
+		// resultArea.setText();
 		resultArea.setEditable(false);
-		resultArea.setBounds(300, 0, 298, 176);
+		resultArea.setFont(textFont);
+		resultArea.setBounds(240, 0, 238, 176);
 		JScrollPane resScr = new JScrollPane(resultArea);
-		resScr.setBounds(300, 0, 298, 176);
+		resScr.setBounds(240, 0, 238, 176);
 		resScr.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		// resultArea.setOpaque(true);
-		resultArea.setBackground(Color.gray);
-		resultArea.setForeground(Color.WHITE);
+		// resultArea.setBackground(Color.lightGray);
+		resultArea.setForeground(Color.darkGray);
 
 		twoArgs.add(argScr);
 		twoArgs.add(resScr);
 		frame.add(twoArgs);
 		frame.add(fileList);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(750, 480);
+		frame.setSize(730, 480);
 		Dimension fraDim = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation((fraDim.width - 750) / 2, (fraDim.height - 480) / 2);
+		frame.setLocation((fraDim.width - 730) / 2, (fraDim.height - 480) / 2);
 		frame.setVisible(true);
 
 	}
@@ -249,23 +314,40 @@ public class MainFrame extends JFrame {
 		});
 	}
 
+	public void newVSD() {
+		versionSuccessDialog vsd = new versionSuccessDialog(this, "Change Version Successful", true);
+		vsd.setVisible(true);
+	}
+
 	public void setVersionSelected() {
 		fileVersions.addListSelectionListener(new ListSelectionListener() {
 
 			public void valueChanged(ListSelectionEvent e) {
 				// TODO Auto-generated method stub
 				String selected = null;
-				if (!fileVersions.isSelectionEmpty()) {
-					selected = fileVersions.getSelectedValue().toString();
-					try {
-						textArea.setText(RemoteHelper.getInstance().getIOService().readFile(admin,
-								fileList.getSelectedValue().toString(), selected));
-						// setVersions(selected);
-					} catch (RemoteException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+				if (hasChosen) {
+					hasChosen = false;
+				} else {
+					hasChosen = true;
+				}
+				if (hasChosen) {
+					if (!fileVersions.isSelectionEmpty()) {
+						selected = fileVersions.getSelectedValue().toString();
+
+						try {
+							textArea.setText(RemoteHelper.getInstance().getIOService().readFile(admin,
+									fileList.getSelectedValue().toString(), selected));
+							if (fileVersions.getModel().getSize() != 1) {
+								newVSD();
+							}
+						} catch (RemoteException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						// newVSD();
 					}
 				}
+				// newVSD();
 			}
 
 		});
@@ -275,8 +357,10 @@ public class MainFrame extends JFrame {
 		try {
 			versions.removeAllElements();
 			String[] vers = RemoteHelper.getInstance().getIOService().readVersions(admin, fileName);
-			for (int index = 0; index < vers.length; index++) {
-				versions.addElement(vers[index]);
+			if (vers != null) {
+				for (int index = 0; index < vers.length; index++) {
+					versions.addElement(vers[index]);
+				}
 			}
 			repaint();
 		} catch (RemoteException e) {
@@ -324,14 +408,16 @@ public class MainFrame extends JFrame {
 						used = RemoteHelper.getInstance().getIOService().readFile(admin,
 								fileList.getSelectedValue().toString(), null);
 						if ((used == null) && (textArea.getText() == null)) {
-							createSaveFailure();
-						} else if (textArea.getText().equals(used)) {
-							createSaveFailure();
+							createSaveState("Wrong!");
+						} else if (textArea.getText().toString().equals(used)) {
+							createSaveState("Failed!");
 						} else {
-							boolean canSave = RemoteHelper.getInstance().getIOService().writeFile(textArea.getText(),
-									admin, fileList.getSelectedValue().toString());
+							boolean canSave = RemoteHelper.getInstance().getIOService().writeFile(
+									textArea.getText().toString(), admin, fileList.getSelectedValue().toString());
+							System.out.println(textArea.getText().toString());
+							System.out.println(textArea.getText());
 							if (canSave) {
-								createSaveSucess();
+								createSaveState("Success!");
 								setVersions(fileList.getSelectedValue().toString());
 								repaint();
 							}
@@ -341,7 +427,7 @@ public class MainFrame extends JFrame {
 						e1.printStackTrace();
 					}
 				} else {
-					createSaveFailure();
+					createSaveState("Wrong");
 				}
 			} else if (cmd == newFile) {
 				createNew("New");
@@ -350,18 +436,129 @@ public class MainFrame extends JFrame {
 			}
 		}
 
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userPress);
+			label.setOpaque(true);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userColor);
+			label.setOpaque(false);
+		}
+
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userIn);
+			label.setOpaque(true);
+		}
+
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userColor);
+			label.setOpaque(false);
+		}
+
 	}
 
-	private void createSaveFailure() {
-		SaveStateDia saveFailure = new SaveStateDia(this, "Failure", true);
+	class undoListener implements MouseListener {
+
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userPress);
+			label.setOpaque(true);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userColor);
+			label.setOpaque(false);
+		}
+
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userIn);
+			label.setOpaque(true);
+		}
+
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userColor);
+			label.setOpaque(false);
+		}
+	}
+	class redoListener implements MouseListener {
+
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userPress);
+			label.setOpaque(true);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userColor);
+			label.setOpaque(false);
+		}
+
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userIn);
+			label.setOpaque(true);
+		}
+
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			Object cmd = e.getSource();
+			JLabel label = (JLabel) cmd;
+			label.setBackground(userColor);
+			label.setOpaque(false);
+		}
+	}
+
+	private void createSaveState(String str) {
+		SaveStateDia saveFailure = new SaveStateDia(this, str, true);
 		saveFailure.setVisible(true);
 	}
 
-	private void createSaveSucess() {
-		// TODO Auto-generated method stub
-		SaveStateDia saveDia = new SaveStateDia(this, "Success", true);
-		saveDia.setVisible(true);
-	}
+	/*
+	 * private void createSaveSucess() { // TODO Auto-generated method stub
+	 * SaveStateDia saveDia = new SaveStateDia(this, "Success", true);
+	 * saveDia.setVisible(true); }
+	 */
 
 	public void createNew(String in) {
 		NewFileDialog newFileDia = new NewFileDialog(this, in, true);
@@ -433,7 +630,7 @@ public class MainFrame extends JFrame {
 
 	public String runMethod() {
 		String code = textArea.getText();
-		String param = argsArea.getText();
+		String param = argsArea.getText() + "\n";
 		String result = null;
 		try {
 			result = RemoteHelper.getInstance().getExecuteService().execute(code, param);
@@ -448,6 +645,31 @@ public class MainFrame extends JFrame {
 		public void mouseClicked(MouseEvent e) {
 
 		}
+
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 }

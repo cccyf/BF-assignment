@@ -85,19 +85,6 @@ public class NewFileDialog extends Dialog {
 		} else {
 			this.removeAll();
 			wrongInput("you haven't logged in!");
-			/*
-			 * JLabel wrong = new JLabel("you haven't logged in!");
-			 * //wrong.setHorizontalAlignment(SwingConstants.CENTER);
-			 * //wrong.setVerticalAlignment(SwingConstants.TOP);
-			 * wrong.setBounds(50, 60, 150, 30); this.add(wrong); JButton back =
-			 * new JButton("back"); back.addActionListener(new ActionListener()
-			 * {
-			 * 
-			 * public void actionPerformed(ActionEvent e) { // TODO
-			 * Auto-generated method stub removeAll(); addInit(); repaint(); }
-			 * 
-			 * }); back.setBounds(50, 100, 150, 30); this.add(back); repaint();
-			 */
 		}
 	}
 

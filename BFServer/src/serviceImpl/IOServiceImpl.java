@@ -31,8 +31,17 @@ public class IOServiceImpl implements IOService {
 			return false;
 		} else {
 			try {
+
 				f.createNewFile();
 				fHistory.createNewFile();
+				FileWriter Hfw = new FileWriter(f, true);
+				Hfw.write("e\n");
+				Hfw.flush();
+				Hfw.close();
+				FileWriter Hf = new FileWriter(fHistory, true);
+				Hf.write("e\n");
+				Hf.flush();
+				Hf.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -44,38 +53,22 @@ public class IOServiceImpl implements IOService {
 
 	@Override
 	public boolean writeFile(String file, String userId, String fileName) {
-		// setInfoList(userId,"history"+fileName);
 		File newFile = new File(
 				"/Users/chengyunfei/百度云同步盘/workspace_v1.0/workspace/BFServer/userInfo/" + userId + "/files");
-		// System.out.println(userId);
 		File Hf = new File(newFile, "history" + fileName);
 		File f = new File(newFile, fileName);
-		// File f= new
-		// File("/Users/chengyunfei/百度云同步盘/workspace_v1.0/workspace/BFServer/userInfo/"
-		// + userId + "/files/"+fileName);
 		try {
 			Date now = new Date();
 			DateFormat timeFormat = new SimpleDateFormat("yy-MM-dd,HH:mm:ss");
-			// DateFormat timeFormat = new SimpleDateFormat("MMddHHmmss");
 			String version = timeFormat.format(now);
-			// if (f.exists()) {
 			FileWriter Hfw = new FileWriter(Hf, true);
-			Hfw.write("No." + version + "/" + file + "e" + "\n");
-			// System.out.println(version);
+			Hfw.write("No." + version + "/" + file + "\ne\n");
 			Hfw.flush();
 			Hfw.close();
 			FileWriter fw = new FileWriter(f, false);
-			fw.write(file + "e");
+			fw.write(file + "\ne");
 			fw.flush();
 			fw.close();
-			// } else {
-			// f.createNewFile();
-			// FileWriter fw = new FileWriter(f, false);
-			// fw.write("No."+version + "/" + file +"e"+ "\n");
-			// System.out.println("new");
-			// fw.flush();
-			// fw.close();
-			// }
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -90,7 +83,7 @@ public class IOServiceImpl implements IOService {
 		FileReader fr;
 		File readFile = new File("/Users/chengyunfei/百度云同步盘/workspace_v1.0/workspace/BFServer/userInfo/" + userId
 				+ "/files/" + fileName);
-		System.out.println(fileName);
+		// System.out.println(fileName);
 		try {
 			fr = new FileReader(readFile);
 			BufferedReader fb = new BufferedReader(fr);
@@ -105,24 +98,19 @@ public class IOServiceImpl implements IOService {
 							ver = null;
 							information = null;
 						}
-						if ((rl.contains("e"))) {
-
-							ver = rl.split("/")[0];
-							if (rl.split("/")[1].length() > 1) {
-								information = rl.split("/")[1].split("e")[0];
-							} else {
-								information = null;
-							}
-
-						} else {
-							ver = rl.split("/")[0];
+						ver = rl.split("/")[0];
+						if (rl.split("/")[1].length() > 0) {
 							information = rl.split("/")[1];
+						} else {
+							information = null;
 						}
-					} else if (rl.contains("e")) {
-						information += rl.split("e")[0];
-					} else {
+					} else if (!rl.contains("e")) {
 						information += rl;
 					}
+					information+="\n";
+					/*if (rl.contains("\r")) {
+						information += "\n";
+					}*/
 				} else {
 					if (ver != null) {
 						infoList.add(new versionInfo(ver, information));
@@ -131,13 +119,13 @@ public class IOServiceImpl implements IOService {
 					}
 					break;
 				}
-
 			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (
+
+		FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		// FileInputStream fs = new FileInputStream(readFile);
+
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -146,24 +134,19 @@ public class IOServiceImpl implements IOService {
 
 	@Override
 	public String readFile(String userId, String fileName, String version) {
-		// TODO Auto-generated method stub
-		// String[] ret;
-		// String inside = "";
 		setInfoList(userId, "history" + fileName);
 
 		if (version != null) {
-			// System.out.println(version);
-			// System.out.println(infoList.get(0).getVersion());
 			for (int index = 0; index < infoList.size(); index++) {
 				if (infoList.get(index).getVersion().equals(version)) {
 					String in = infoList.get(index).getInfo();
-					System.out.println(in);
+					// System.out.println(in);
 					File file = new File("/Users/chengyunfei/百度云同步盘/workspace_v1.0/workspace/BFServer/userInfo/"
 							+ userId + "/files/" + fileName);
 					try {
 						FileWriter fw = new FileWriter(file);
-						System.out.println(fileName);
-						fw.write(in);
+						// System.out.println(fileName);
+						fw.write(in + "\ne");
 						fw.flush();
 						fw.close();
 					} catch (IOException e) {
@@ -177,19 +160,20 @@ public class IOServiceImpl implements IOService {
 
 		File rf = new File("/Users/chengyunfei/百度云同步盘/workspace_v1.0/workspace/BFServer/userInfo/" + userId + "/files/"
 				+ fileName);
-		String result ="";
+		String result = "";
 		String line = null;
 		try {
 			FileReader fr = new FileReader(rf);
 			BufferedReader br = new BufferedReader(fr);
-			while (((line = br.readLine()) != null) && (line != "e")) {
-
-				if (!(line).contains("e")) {
-					result += line;
-				} else {
-					result += line.split("e")[0];
-					break;
-				}
+			// while (((line = br.readLine()) != null) && (line != "e")) {
+			while (!(line = br.readLine()).contains("e")) {
+				result += line;
+				result += "\n";
+				// System.out.println(line);
+				// else {
+				// result += line.split("e")[0];
+				// break;
+				// }
 			}
 
 		} catch (FileNotFoundException e) {
@@ -233,11 +217,15 @@ public class IOServiceImpl implements IOService {
 	public String[] readVersions(String userId, String fileName) throws RemoteException {
 		String[] versions;
 		setInfoList(userId, "history" + fileName);
-		versions = new String[infoList.size()];
-		for (int in = 0; in < infoList.size(); in++) {
-			versions[in] = infoList.get(in).getVersion();
+		if (infoList.size() > 0) {
+			versions = new String[infoList.size()];
+			for (int in = 0; in < infoList.size(); in++) {
+				versions[in] = infoList.get(in).getVersion();
+			}
+			return versions;
 		}
-		return versions;
+		// System.out.println(versions[0]);
+		return null;
 
 	}
 

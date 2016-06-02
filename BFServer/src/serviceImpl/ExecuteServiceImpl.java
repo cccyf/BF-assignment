@@ -25,6 +25,7 @@ public class ExecuteServiceImpl implements ExecuteService {
 		for (int m = 0; m < 100; m++) {
 			saveInfo[m] = 0;
 		}
+		point = 0;
 		if (param != "") {
 			inputs = new char[param.length()];
 			isWhoseTurn = new boolean[param.length()];
@@ -67,6 +68,7 @@ public class ExecuteServiceImpl implements ExecuteService {
 			switch (code.charAt(position)) {
 			case ',':
 				int turn = judgeTurn();
+				System.out.println(turn);
 				saveInfo[point] = inputs[turn];
 				continue;
 			case '>':
