@@ -350,40 +350,58 @@ public class MainFrame extends JFrame {
 		nsd.setVisible(true);
 	}
 
+	private int first = 0;
+
 	public void newVSD() {
+		first++;
+		// if (first % 2 == 1) {
 		versionSuccessDialog vsd = new versionSuccessDialog(this, "Change Version Successful", true);
 		vsd.setVisible(true);
+		// }
 	}
 
 	public void setVersionSelected() {
-		fileVersions.addListSelectionListener(new ListSelectionListener() {
+		fileVersions.addMouseListener(new MouseAdapter() {
 
-			public void valueChanged(ListSelectionEvent e) {
+			/*
+			 * public void valueChanged(ListSelectionEvent e) { // TODO
+			 * Auto-generated method stub String selected = null;
+			 * //System.out.println(hasChosen); // hasChosen = true; if
+			 * (hasChosen) { if (!fileVersions.isSelectionEmpty()) { selected =
+			 * fileVersions.getSelectedValue().toString(); try {
+			 * textArea.setText(RemoteHelper.getInstance().getIOService().
+			 * readFile(admin, fileList.getSelectedValue().toString(),
+			 * selected)); if (fileVersions.getModel().getSize() != 1) {
+			 * newVSD(); System.out.println("new"); hasChosen = false; } } catch
+			 * (RemoteException e1) { // TODO Auto-generated catch block
+			 * e1.printStackTrace(); } // newVSD(); } } else { hasChosen = true;
+			 * } // newVSD(); }
+			 */
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-				String selected = null;
-				if (hasChosen) {
-					hasChosen = false;
-				} else {
-					hasChosen = true;
-				}
 				if (hasChosen) {
 					if (!fileVersions.isSelectionEmpty()) {
-						selected = fileVersions.getSelectedValue().toString();
-
+						JList a = (JList) (e.getSource());
+						String selected = a.getSelectedValue().toString();
 						try {
 							textArea.setText(RemoteHelper.getInstance().getIOService().readFile(admin,
 									fileList.getSelectedValue().toString(), selected));
 							if (fileVersions.getModel().getSize() != 1) {
 								newVSD();
+								System.out.println("new");
+								hasChosen = false;
 							}
 						} catch (RemoteException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						// newVSD();
+						// System.out.println(b);
 					}
+				}else{
+					hasChosen = true;
 				}
-				// newVSD();
 			}
 
 		});
@@ -438,26 +456,37 @@ public class MainFrame extends JFrame {
 				resultArea.setText(runMethod());
 			} else if (cmd == saveFile) {
 				// createSave("Save as...");
-				saveFile();
-				/*
-				 * if (admin != null) { try { String used = null; used =
-				 * RemoteHelper.getInstance().getIOService().readFile(admin,
-				 * fileList.getSelectedValue().toString(), null); if ((used ==
-				 * null) && (textArea.getText() == null)) {
-				 * createSaveState("Wrong!"); } else if
-				 * (textArea.getText().toString().equals(used)) {
-				 * createSaveState("Failed!"); } else { boolean canSave =
-				 * RemoteHelper.getInstance().getIOService().writeFile(
-				 * textArea.getText().toString(), admin,
-				 * fileList.getSelectedValue().toString());
-				 * System.out.println(textArea.getText().toString());
-				 * System.out.println(textArea.getText()); if (canSave) {
-				 * createSaveState("Success!");
-				 * setVersions(fileList.getSelectedValue().toString());
-				 * repaint(); hasSaved = true; } } } catch (RemoteException e1)
-				 * { // TODO Auto-generated catch block e1.printStackTrace(); }
-				 * } else { createSaveState("Wrong"); }
-				 */
+				// saveFile();
+
+				if ((admin != null) && (!fileNames.isEmpty())) {
+					try {
+						String used = null;
+						used = RemoteHelper.getInstance().getIOService().readFile(admin,
+								fileList.getSelectedValue().toString(), null);
+						if ((used == null) && (textArea.getText() == null)) {
+							createSaveState("Wrong!");
+						} else if (textArea.getText().toString().equals(used)) {
+							createSaveState("Failed!");
+						} else {
+							boolean canSave = RemoteHelper.getInstance().getIOService().writeFile(
+									textArea.getText().toString(), admin, fileList.getSelectedValue().toString());
+							System.out.println(textArea.getText().toString());
+							System.out.println(textArea.getText());
+							if (canSave) {
+								createSaveState("Success!");
+								setVersions(fileList.getSelectedValue().toString());
+								repaint();
+								hasSaved = true;
+							}
+						}
+					} catch (RemoteException e1) { // TODO Auto-generated catch
+													// block
+						e1.printStackTrace();
+					}
+				} else {
+					createSaveState("Wrong");
+				}
+
 			} else if (cmd == newFile) {
 				createNew("New");
 			} else if (cmd == log) {
@@ -499,36 +528,23 @@ public class MainFrame extends JFrame {
 
 	}
 
-	public void saveFile() {
-		if (admin != null) {
-			try {
-				String used = null;
-				used = RemoteHelper.getInstance().getIOService().readFile(admin, fileList.getSelectedValue().toString(),
-						null);
-				if ((used == null) && (textArea.getText() == null)) {
-					createSaveState("Wrong!");
-				} else if (textArea.getText().toString().equals(used)) {
-					createSaveState("Failed!");
-				} else {
-					boolean canSave = RemoteHelper.getInstance().getIOService().writeFile(textArea.getText().toString(),
-							admin, fileList.getSelectedValue().toString());
-					System.out.println(textArea.getText().toString());
-					System.out.println(textArea.getText());
-					if (canSave) {
-						createSaveState("Success!");
-						setVersions(fileList.getSelectedValue().toString());
-						repaint();
-						hasSaved = true;
-					}
-				}
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		} else {
-			createSaveState("Wrong");
-		}
-	}
+	/*
+	 * public void saveFile() { if ((admin != null) && (!fileNames.isEmpty())) {
+	 * try { String used = null; used =
+	 * RemoteHelper.getInstance().getIOService().readFile(admin,
+	 * fileList.getSelectedValue().toString(), null); if ((used == null) &&
+	 * (textArea.getText() == null)) { createSaveState("Wrong!"); } else if
+	 * (textArea.getText().toString().equals(used)) {
+	 * createSaveState("Failed!"); } else { boolean canSave =
+	 * RemoteHelper.getInstance().getIOService().writeFile(textArea.getText().
+	 * toString(), admin, fileList.getSelectedValue().toString());
+	 * System.out.println(textArea.getText().toString());
+	 * System.out.println(textArea.getText()); if (canSave) {
+	 * createSaveState("Success!");
+	 * setVersions(fileList.getSelectedValue().toString()); repaint(); hasSaved
+	 * = true; } } } catch (RemoteException e1) { // TODO Auto-generated catch
+	 * block e1.printStackTrace(); } } else { createSaveState("Wrong"); } }
+	 */
 
 	public boolean shouldSave(String name) {
 		try {
@@ -692,7 +708,7 @@ public class MainFrame extends JFrame {
 	}
 
 	public void allSetInitial() {
-		textArea.setText(null);
+		/*textArea.setText(null);
 		resultArea.setText(null);
 		argsArea.setText(null);
 		userLabel.setText("Hello");
@@ -709,8 +725,12 @@ public class MainFrame extends JFrame {
 		hasCanceled = false;
 		hasUndo = false;
 		hasChosen = false;
-		this.repaint();
-
+		stack = null;
+		stacks = new LinkedList<StackInfo>();
+		timer.cancel();
+		this.repaint();*/
+        new MainFrame();
+        this.dispose();
 	}
 
 	public void createFileStacks() {
