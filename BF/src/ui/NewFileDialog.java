@@ -118,6 +118,7 @@ public class NewFileDialog extends Dialog {
 	}
 	public void setList() {
 		try {
+			//frame.addStack();
 			frame.setFileList(RemoteHelper.getInstance().getIOService().readFileList(frame.getUserName()));
 			frame.setItemSelected(new String(nameArea.getText())+".txt");
 		//	System.out.println(nameArea.getText());

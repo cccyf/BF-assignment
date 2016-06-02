@@ -178,6 +178,8 @@ public class LoginDialog extends Dialog {
 		try {
 			jf.setFileList(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
 			jf.log();
+			jf.timerInitial();
+			jf.createFileStacks();
 			// System.out.println(RemoteHelper.getInstance().getIOService().readFileList(jf.getUserName()));
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
